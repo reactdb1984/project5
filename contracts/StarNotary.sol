@@ -7,13 +7,15 @@ import "../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721.sol"
 contract StarNotary is ERC721 {
 
 
-  string public name = "StarToken";
 
-  string public symbol = "STN";
     // Star data
     struct Star {
         string name;
     }
+
+      string public name = "StarToken";
+
+  string public symbol = "STN";
 
     // Implement Task 1 Add a name and symbol properties
     // name: Is a short name to your token
@@ -60,19 +62,21 @@ contract StarNotary is ERC721 {
 
     // Implement Task 1 lookUptokenIdToStarInfo
     function lookUptokenIdToStarInfo (uint _tokenId) public view returns ( string memory) {
-        return   (tokenIdToStarInfo[_tokenId]);
+        Star memory starinfo = tokenIdToStarInfo[_tokenId];
+        return starinfo.name;
         //1. You should return the Star saved in tokenIdToStarInfo mapping
     }
 
 
     // Implement Task 1 Exchange Stars function
     function exchangeStars(uint256 _tokenId1, uint256 _tokenId2) public payable {
-        require(ownerOf(_tokenId1 == msg.sender));
-        require(ownerOf(_tokenId2 == msg.sender));
+        require(ownerOf(_tokenId1) == msg.sender || ownerOf(_tokenId2) == msg.sender, "you need to own a star to exchange it");
       
           address owner1 = (ownerOf(_tokenId1));
           address owner2 = (ownerOf(_tokenId2));
           _transferFrom(owner1, owner2, _tokenId1);
+          _transferFrom(owner2, owner1, _tokenId2);
+
        }
         
        
@@ -84,7 +88,7 @@ contract StarNotary is ERC721 {
 
     // Implement Task 1 Transfer Stars
     function transferStar(address _to1, uint256 _tokenId) public {
-        require(msg.sender == ownerOf(_tokenId));
+        require(ownerOf(_tokenId)==msg.sender);
         transferFrom(msg.sender, _to1, _tokenId);
         //1. Check if the sender is the ownerOf(_tokenId)
         //2. Use the transferFrom(from, to, tokenId); function to transfer the Star
